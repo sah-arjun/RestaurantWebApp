@@ -46,11 +46,11 @@ export default class DishDetail extends Component {
   }
 
   render() {
-    if (this.props.selectedDish != null) {
+    if (this.props.dish != null) {
       return (
         <div className="row">
-          {this.renderDish(this.props.selectedDish)}
-          {this.renderComments(this.props.selectedDish.comments)}
+          {this.renderDish(this.props.dish)}
+          {this.renderComments(this.props.dish.comments)}
         </div>
       );
     } else return <div />;
