@@ -6,6 +6,7 @@ import Menu from "./Menu";
 import Header from "./Header";
 import Footer from "./Footer";
 import Contact from "./Contact";
+import About from "./About";
 import { DISHES } from "../shared/dishes";
 import { COMMENTS } from "../shared/comments";
 import { PROMOTIONS } from "../shared/promotions";
@@ -60,6 +61,10 @@ class Main extends Component {
         <div className="container">
           <Switch>
             <Route path="/home" component={HomePage} />
+            <Route
+              path="/aboutus"
+              component={() => <About leaders={this.state.leaders} />}
+            />
             <Route
               exact
               path="/menu"
