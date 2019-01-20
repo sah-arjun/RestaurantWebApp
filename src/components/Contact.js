@@ -16,18 +16,14 @@ class Contact extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      firstName: "",
-      lastName: "",
-      telNum: "",
-      email: "",
-      agree: false,
-      contactType: "Tel.",
-      message: "",
-      touched: {
-        firstName: false,
-        lastName: false,
-        telNum: false,
-        email: false
+      fields: {
+        firstName: "",
+        lastName: "",
+        telNum: "",
+        email: "",
+        agree: false,
+        contactType: "",
+        message: ""
       }
     };
   }
@@ -40,29 +36,33 @@ class Contact extends Component {
       email: ""
     };
 
-    if (this.state.touched.firstName && firstName.length < 3)
-      errors.firstName = "First name should be >= 3 characters.";
-    else if (this.state.touched.firstName && firstName.length > 10)
-      errors.firstName = "First name should be <= 10 characters.";
-    if (this.state.touched.lastName && lastName.length < 3)
-      errors.lastName = "Last name should be >= 3 characters.";
-    else if (this.state.touched.lastName && lastName.length > 10)
-      errors.lastName = "Last name should be <= 10 characters.";
+    if (firstName === false) errors.firstName = "First name is required.";
 
-    const regInt = /^\d+$/; // Integer values
-    const regEmail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    if (this.state.touched.telNum && !regInt.test(telNum))
+    if (lastName === false) errors.lastName = "Last name is required.";
+
+    const regInt = /^\d+$/;
+    if (telNum !== "" && !regInt.test(telNum))
       errors.telNum = "Tel. number should contain only numbers.";
-    if (this.state.touched.email && !regEmail.test(email))
+
+    const regEmail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+    if (email !== "" && !regEmail.test(email))
       errors.email = "Email should be valid.";
 
     return errors;
   };
 
   handleBlur = field => evt => {
-    this.setState({
-      touched: { ...this.state.touched, [field]: true }
-    });
+    const value = evt.target.value;
+    console.log(value);
+    if (value === "") {
+      this.setState({
+        fields: { ...this.state.fields, [field]: false }
+      });
+    } else {
+      this.setState({
+        fields: { ...this.state.fields, [field]: value }
+      });
+    }
   };
 
   handleInputChange = event => {
@@ -70,18 +70,26 @@ class Contact extends Component {
     const value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
     this.setState({
-      [name]: value
+      fields: { ...this.state.fields, [name]: value }
     });
   };
 
   handleSubmit = event => {
-    console.log("Current State is: " + JSON.stringify(this.state));
-    alert("Current State is: " + JSON.stringify(this.state));
+    console.log("Current State is: " + JSON.stringify(this.state.fields));
+    alert("Current State is: " + JSON.stringify(this.state.fields));
     event.preventDefault();
   };
 
   render() {
-    const { firstName, lastName, telNum, email } = this.state;
+    const {
+      firstName,
+      lastName,
+      telNum,
+      email,
+      agree,
+      contactType,
+      message
+    } = this.state.fields;
     const errors = this.handleValidation(firstName, lastName, telNum, email);
 
     return (
@@ -163,7 +171,6 @@ class Contact extends Component {
                     placeholder="First Name"
                     valid={errors.firstName === ""}
                     invalid={errors.firstName !== ""}
-                    value={this.state.firstName}
                     onChange={this.handleInputChange}
                     onBlur={this.handleBlur("firstName")}
                   />
@@ -182,7 +189,6 @@ class Contact extends Component {
                     placeholder="Last Name"
                     valid={errors.lastName === ""}
                     invalid={errors.lastName !== ""}
-                    value={this.state.lastName}
                     onChange={this.handleInputChange}
                     onBlur={this.handleBlur("lastName")}
                   />
@@ -201,7 +207,6 @@ class Contact extends Component {
                     placeholder="Tel. Number"
                     valid={errors.telNum === ""}
                     invalid={errors.telNum !== ""}
-                    value={this.state.telNum}
                     onChange={this.handleInputChange}
                     onBlur={this.handleBlur("telNum")}
                   />
@@ -220,7 +225,6 @@ class Contact extends Component {
                     placeholder="Email"
                     valid={errors.email === ""}
                     invalid={errors.email !== ""}
-                    value={this.state.email}
                     onChange={this.handleInputChange}
                     onBlur={this.handleBlur("email")}
                   />
@@ -234,7 +238,7 @@ class Contact extends Component {
                       <Input
                         type="checkbox"
                         name="agree"
-                        checked={this.state.agree}
+                        checked={agree}
                         onChange={this.handleInputChange}
                       />{" "}
                       <strong>May we contact you?</strong>
@@ -245,11 +249,12 @@ class Contact extends Component {
                   <Input
                     type="select"
                     name="contactType"
-                    value={this.state.contactType}
+                    value={contactType}
                     onChange={this.handleInputChange}
                   >
-                    <option>Tel.</option>
-                    <option>Email</option>
+                    <option value="">Select</option>
+                    <option value="tel">Tel.</option>
+                    <option value="email">Email</option>
                   </Input>
                 </Col>
               </FormGroup>
@@ -262,8 +267,8 @@ class Contact extends Component {
                     type="textarea"
                     id="message"
                     name="message"
-                    value={this.state.message}
-                    row="12"
+                    value={message}
+                    rows="12"
                     onChange={this.handleInputChange}
                   />
                 </Col>
